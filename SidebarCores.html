@@ -29,6 +29,11 @@
     .btn-bold.active { color:var(--primary); background:#e8f0fe; font-weight:bold; }
     .btn-reset, .btn-copy { background:#f8f9fa; border:1px solid #dadce0; border-radius:3px; padding:3px 5px; cursor:pointer; color:#5f6368; min-width:28px; display:flex; align-items:center; justify-content:center; }
     .btn-reset:hover, .btn-copy:hover { background:#e8eaed; color:#202124; }
+    
+    /* Novo botão para resetar subcategorias */
+    .btn-reset-subs { background:#fce8e6; border:1px solid #f6c7c2; border-radius:3px; padding:3px 5px; cursor:pointer; color:#c5221f; min-width:28px; display:flex; align-items:center; justify-content:center; margin-left: 2px; }
+    .btn-reset-subs:hover { background:#fad2cf; color:#a50e0e; }
+
     .btn-copy.copied { background:#e8f0fe; color:#1a73e8; }
     .footer { background:white; padding:12px 16px; border-top:1px solid var(--border); position:fixed; bottom:0; width:100%; text-align:center; box-sizing:border-box; }
     .btn-save { background:var(--primary); color:white; border:none; padding:10px 24px; border-radius:24px; cursor:pointer; width:100%; font-weight:500; }
@@ -559,7 +564,8 @@
         '</div>' +
         '<div class="btn-bold ' + bld + '">B</div>' +
         '<button class="btn-copy" title="Copiar formatação"><span class="material-icons" style="font-size:14px;">content_copy</span></button>' +
-        '<button class="btn-reset" title="Resetar"><span class="material-icons" style="font-size:14px;">refresh</span></button>' +
+        '<button class="btn-reset" title="Resetar este item"><span class="material-icons" style="font-size:14px;">refresh</span></button>' +
+        (role === 'Categoria' ? '<button class="btn-reset-subs" title="Resetar TODAS as Subcategorias"><span class="material-icons" style="font-size:14px;">layers_clear</span></button>' : '') +
         '</div>';
       
       const iBg = el.querySelector('.inp-bg');
@@ -612,6 +618,44 @@
         btn.classList.remove('active');
         upd();
       };
+      
+      // Nova lógica para resetar subcategorias (apenas se for categoria)
+      if (role === 'Categoria') {
+        const btnSubs = el.querySelector('.btn-reset-subs');
+        if (btnSubs) {
+          btnSubs.onclick = function() {
+            if (!confirm('Tem certeza? Isso irá resetar a formatação de todas as subcategorias deste grupo.')) return;
+            
+            const group = el.closest('.group-container');
+            if (!group) return;
+            
+            const subs = group.querySelectorAll('.sub-list .editor-item');
+            if (!subs || subs.length === 0) {
+              setStatus('⚠️ Nenhuma subcategoria encontrada.', 'orange');
+              return;
+            }
+            
+            subs.forEach(function(sub) {
+              const sBg = sub.querySelector('.inp-bg');
+              const sTxt = sub.querySelector('.inp-txt');
+              const sBtn = sub.querySelector('.btn-bold');
+              const sPrev = sub.querySelector('.preview-box');
+              
+              sBg.value = '#ffffff';
+              sTxt.value = '#000000';
+              sBtn.classList.remove('active');
+              
+              // Atualiza visualização manualmente
+              sPrev.style.backgroundColor = '#ffffff';
+              sPrev.style.color = '#000000';
+              sPrev.style.fontWeight = 'normal';
+            });
+            
+            setStatus('✅ ' + subs.length + ' subcategorias resetadas.', 'green');
+            setTimeout(function() { setStatus(''); }, 2000);
+          };
+        }
+      }
       
       return el;
     }
