@@ -31,6 +31,14 @@ function _lerOverrideCores_(propKey) {
 
 // --- FUNÇÕES PÚBLICAS (RPC) ---
 
+function abrirGuiaVisual() {
+  const html = HtmlService.createHtmlOutputFromFile('GuiaVisual')
+      .setWidth(450)
+      .setHeight(600)
+      .setTitle('Guia Visual: Sistema de Cores e Status');
+  SpreadsheetApp.getUi().showModelessDialog(html, 'Guia Visual');
+}
+
 function getDadosConfiguracao() {
   try {
     if (typeof DropdownManager !== 'undefined') DropdownManager._limparCache();

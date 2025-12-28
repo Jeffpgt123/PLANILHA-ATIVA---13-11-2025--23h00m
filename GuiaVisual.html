@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; padding: 0; margin: 0; background: #f7fafc; color: #2d3748; }
+    
+    /* Estruturas do Guia */
+    .guide-container { padding: 15px; }
+    .guide-intro { background: white; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+    .guide-intro h4 { margin: 0 0 8px 0; font-size: 14px; color: #2c3e50; font-weight: 700; }
+    .guide-intro p { margin: 0; font-size: 12px; color: #4a5568; line-height: 1.5; }
+    
+    .layer-section { background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 12px; overflow: hidden; }
+    .layer-header { background: #2c3e50; color: white; padding: 10px 12px; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .layer-tag { font-size: 9px; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 10px; text-transform: uppercase; font-weight: 700; }
+    .layer-content { padding: 12px; }
+    .layer-content p { font-size: 11px; color: #4a5568; margin: 0 0 12px 0; }
+
+    .status-item { display: grid; grid-template-columns: 50px 1fr auto; gap: 10px; align-items: start; padding: 10px; border-bottom: 1px solid #f1f3f4; }
+    .status-item:last-child { border-bottom: none; }
+    .status-color { width: 50px; height: 32px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.15); box-shadow: 0 1px 2px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
+    .status-color-bg { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
+    .status-info { flex: 1; }
+    .status-name { font-size: 11px; font-weight: 700; color: #2d3748; margin: 0 0 3px 0; }
+    .status-desc { font-size: 10px; color: #718096; margin: 0; line-height: 1.4; }
+    .status-hex { font-family: 'Courier New', monospace; font-size: 9px; color: #4a5568; background: #f7fafc; padding: 4px 6px; border-radius: 3px; border: 1px solid #e2e8f0; }
+    
+    .hierarchy-box { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 15px; margin-bottom: 15px; text-align: center; }
+    .hierarchy-title { font-size: 12px; font-weight: 600; color: #2c3e50; margin-bottom: 12px; }
+    .hierarchy-flow { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .hierarchy-level { padding: 8px 16px; border-radius: 4px; font-size: 11px; font-weight: 600; color: white; }
+    .hierarchy-arrow { color: #cbd5e0; font-weight: bold; font-size: 18px; }
+    
+    .example-section { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; margin-top: 12px; }
+    .example-title { font-size: 12px; font-weight: 600; color: #2c3e50; margin-bottom: 10px; }
+    .example-step { background: #f7fafc; padding: 10px; border-radius: 4px; border-left: 3px solid #cbd5e0; margin-bottom: 8px; }
+    .example-step-title { font-size: 11px; font-weight: 600; color: #4a5568; margin-bottom: 5px; }
+    .example-step-content { font-size: 10px; color: #718096; }
+    .example-result { font-size: 10px; color: #2d3748; font-weight: 600; margin-top: 4px; }
+
+    /* Alertas */
+    .alert-box { padding:10px; border-radius:4px; margin-top:12px; border-left-width:3px; border-left-style:solid; }
+    .alert-orange { background:#fffaf0; border-left-color:#ed8936; }
+    .alert-blue { background:#f0f4ff; border-left-color:#5a67d8; }
+    .alert-red { background:#fff5f5; border-left-color:#e53e3e; }
+    .alert-title { font-size:11px; font-weight:600; margin-bottom:4px; }
+    .alert-text { font-size:10px; line-height:1.4; }
+    
+    /* Helper Cores de Texto */
+    .c-orange { color:#c05621; } .c-brown { color:#744210; }
+    .c-blue { color:#2c5282; }
+    .c-red { color:#c53030; } .c-darkred { color:#742a2a; }
+  </style>
+</head>
+<body>
+  <div class="guide-container">
+    
+    <!-- Introdução -->
+    <div class="guide-intro">
+      <h4>🎯 Hierarquia de Precedência</h4>
+      <p>Sistema de 3 camadas onde a cor mais crítica sempre prevalece na visualização.</p>
+    </div>
+    
+    <div class="hierarchy-box">
+      <div class="hierarchy-title">Ordem de Precedência Visual</div>
+      <div class="hierarchy-flow">
+        <span class="hierarchy-level" style="background: #e53e3e;">ENCERRAMENTO</span>
+        <span class="hierarchy-arrow">></span>
+        <span class="hierarchy-level" style="background: #ed8936;">EXCEÇÃO</span>
+        <span class="hierarchy-arrow">></span>
+        <span class="hierarchy-level" style="background: #4299e1;">ESTADO</span>
+      </div>
+    </div>
+    
+    <!-- Camada 1: Estados -->
+    <div class="layer-section">
+      <div class="layer-header">
+        <span>🔵 Camada 1: Estados Naturais</span>
+        <span class="layer-tag">Fluxo</span>
+      </div>
+      <div class="layer-content">
+        <p>Progressão esperada do processo, sem exceções. Cores representam etapas normais.</p>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#6F42C1;"><div class="status-color-bg" style="color:white;">ABC</div></div>
+          <div class="status-info"><div class="status-name">EM PROSPECÇÃO</div><div class="status-desc">Estado inicial - novidade/oportunidade</div></div>
+          <div class="status-hex">Fundo: #6F42C1<br>Texto: Branco</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#26C6DA;"><div class="status-color-bg" style="color:black;">ABC</div></div>
+          <div class="status-info"><div class="status-name">A INTERNALIZAR</div><div class="status-desc">Entrada na fila operacional</div></div>
+          <div class="status-hex">Fundo: #26C6DA<br>Texto: Preto</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#78909C;"><div class="status-color-bg" style="color:white;">ABC</div></div>
+          <div class="status-info"><div class="status-name">INTERNALIZADO</div><div class="status-desc">Ativo e organizado, processando</div></div>
+          <div class="status-hex">Fundo: #78909C<br>Texto: Branco</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#F1C21B;"><div class="status-color-bg" style="color:black;">ABC</div></div>
+          <div class="status-info"><div class="status-name">EM ANÁLISE</div><div class="status-desc">Fase sensível, avaliação em andamento</div></div>
+          <div class="status-hex">Fundo: #F1C21B<br>Texto: Preto</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#2ECC71;"><div class="status-color-bg" style="color:black;">ABC</div></div>
+          <div class="status-info"><div class="status-name">CONTRATADO / CONCLUÍDO</div><div class="status-desc">Sucesso final - processo aprovado</div></div>
+          <div class="status-hex">Fundo: #2ECC71<br>Texto: Preto</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Camada 2: Exceções -->
+    <div class="layer-section">
+      <div class="layer-header">
+        <span>⚠️ Camada 2: Marcadores de Atenção</span>
+        <span class="layer-tag">Exceções</span>
+      </div>
+      <div class="layer-content">
+        <p>Exceções recuperáveis. Sobrescrevem visualização do estado sem alterá-lo.</p>
+        
+        <div class="alert-box alert-orange">
+          <div class="alert-title c-orange">Escala de Severidade</div>
+          <div class="alert-text c-brown">Progressão de gravidade crescente (amarelo → vermelho)</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#FFF176;"><div class="status-color-bg" style="color:black;">ABC</div></div>
+          <div class="status-info"><div class="status-name">PENDÊNCIA LEVE</div><div class="status-desc">Ajuste simples; "olhe quando der"</div></div>
+          <div class="status-hex">Fundo: #FFF176<br>Texto: Preto</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#FFB300;"><div class="status-color-bg" style="color:black;">ABC</div></div>
+          <div class="status-info"><div class="status-name">PENDÊNCIA MODERADA</div><div class="status-desc">Ameaça prazo; chama mais atenção</div></div>
+          <div class="status-hex">Fundo: #FFB300<br>Texto: Preto</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#FF7043;"><div class="status-color-bg" style="color:white;">ABC</div></div>
+          <div class="status-info"><div class="status-name">PENDÊNCIA GRAVE</div><div class="status-desc">Alto risco de inviabilizar; priorizar</div></div>
+          <div class="status-hex">Fundo: #FF7043<br>Texto: Branco</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#E53935;"><div class="status-color-bg" style="color:white;">ABC</div></div>
+          <div class="status-info"><div class="status-name">BLOQUEIO CRÍTICO</div><div class="status-desc">Travamento total; intervenção direta</div></div>
+          <div class="status-hex">Fundo: #E53935<br>Texto: Branco</div>
+        </div>
+        
+        <div class="alert-box alert-blue">
+          <div class="alert-title c-blue">Marcadores Especiais</div>
+          <div class="alert-text">Natureza diferente da escala de severidade</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#7E57C2;"><div class="status-color-bg" style="color:white;">ABC</div></div>
+          <div class="status-info"><div class="status-name">AGUARDANDO TERCEIROS</div><div class="status-desc">Dependência externa; acompanhar/cobrar</div></div>
+          <div class="status-hex">Fundo: #7E57C2<br>Texto: Branco</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#0062FF;"><div class="status-color-bg" style="color:white;">ABC</div></div>
+          <div class="status-info"><div class="status-name">AÇÃO IMEDIATA</div><div class="status-desc">Executar agora; urgência sem conotar falha</div></div>
+          <div class="status-hex">Fundo: #0062FF<br>Texto: Branco</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Camada 3: Encerramentos -->
+    <div class="layer-section">
+      <div class="layer-header">
+        <span>🏁 Camada 3: Encerramentos Definitivos</span>
+        <span class="layer-tag">Terminais</span>
+      </div>
+      <div class="layer-content">
+        <p>Estados terminais que sempre dominam visualização. Fim definitivo do processo.</p>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#2ECC71;"><div class="status-color-bg" style="color:black;">ABC</div></div>
+          <div class="status-info"><div class="status-name">SUCESSO</div><div class="status-desc">Processo concluído positivamente</div></div>
+          <div class="status-hex">Fundo: #2ECC71<br>Texto: Preto</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#DA1E28;"><div class="status-color-bg" style="color:white;">ABC</div></div>
+          <div class="status-info"><div class="status-name">INDEFERIDO / NEGADO</div><div class="status-desc">Decisão negativa técnica definitiva</div></div>
+          <div class="status-hex">Fundo: #DA1E28<br>Texto: Branco</div>
+        </div>
+        
+        <div class="status-item">
+          <div class="status-color" style="background:#353A40;"><div class="status-color-bg" style="color:white;">ABC</div></div>
+          <div class="status-info"><div class="status-name">CANCELADO / ARQUIVADO</div><div class="status-desc">Encerramento administrativo (não é erro)</div></div>
+          <div class="status-hex">Fundo: #353A40<br>Texto: Branco</div>
+        </div>
+        
+        <div class="alert-box alert-red">
+          <div class="alert-title c-red">⚠️ Importante: Distinção para KPIs</div>
+          <div class="alert-text c-darkred">
+            <strong>NEGADO:</strong> Conta em "taxa de indeferimento"<br>
+            <strong>CANCELADO:</strong> Conta em "taxa de cancelamento"<br>
+            <em>Nunca misturar - contamina métricas</em>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Exemplo Prático -->
+    <div class="example-section">
+      <div class="example-title">📚 Exemplo Prático: Como a Hierarquia Funciona</div>
+      
+      <div class="example-step">
+        <div class="example-step-title">Situação 1: Processo Normal</div>
+        <div class="example-step-content">Estado: <code>EM ANÁLISE</code> | Exceção: (nenhuma)</div>
+        <div class="example-result">→ Cor: <span style="background:#F1C21B;color:black;padding:2px 8px;border-radius:3px;font-family:monospace;">#F1C21B (amarelo)</span></div>
+      </div>
+      
+      <div class="example-step">
+        <div class="example-step-title">Situação 2: Processo com Pendência Leve</div>
+        <div class="example-step-content">Estado: <code>EM ANÁLISE</code> | Exceção: <code>FALTA DOCUMENTOS</code></div>
+        <div class="example-result">→ Cor: <span style="background:#FFF176;color:black;padding:2px 8px;border-radius:3px;font-family:monospace;">#FFF176 (amarelo claro)</span> ← Camada 2 sobrescreve</div>
+      </div>
+      
+      <div class="example-step">
+        <div class="example-step-title">Situação 3: Processo Bloqueado Criticamente</div>
+        <div class="example-step-content">Estado: <code>EM ANÁLISE</code> | Exceção: <code>RESTRITIVOS</code></div>
+        <div class="example-result">→ Cor: <span style="background:#E53935;color:white;padding:2px 8px;border-radius:3px;font-family:monospace;">#E53935 (vermelho)</span> ← Camada 2 sobrescreve</div>
+      </div>
+      
+      <div class="example-step">
+        <div class="example-step-title">Situação 4: Processo Indeferido</div>
+        <div class="example-step-content">Estado: <code>EM ANÁLISE</code> | Exceção: <code>BLOQUEIO</code> | Decisão: <code>INDEFERIDO</code></div>
+        <div class="example-result">→ Cor: <span style="background:#DA1E28;color:white;padding:2px 8px;border-radius:3px;font-family:monospace;">#DA1E28 (vermelho forte)</span> ← Camada 3 domina TUDO</div>
+      </div>
+    </div>
+    
+  </div>
+</body>
+</html>
