@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root { --primary: #1a73e8; --bg: #f8f9fa; --border: #dadce0; }
+    body { padding:0; margin:0; font-family:'Roboto',Arial,sans-serif; font-size:14px; background:var(--bg); }
+    .header { background:white; padding:16px; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; }
+    select { width:100%; padding:8px; border-radius:4px; border:1px solid var(--border); margin-top:6px; }
+    .content-scroll { height:calc(100vh - 200px); overflow-y:auto; padding:16px; }
+    .content-scroll::-webkit-scrollbar { width: 6px; }
+    .content-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+    .group-container { background:white; border:1px solid var(--border); border-radius:8px; margin-bottom:12px; overflow:hidden; }
+    .cat-row { padding:10px; border-bottom:1px solid #eee; }
+    .sub-list { background:#f8f9fa; padding:5px 0 5px 15px; border-top:1px solid #f1f3f4; }
+    .sub-row { padding:8px 10px; border-left:2px solid #ddd; margin:4px 0 4px 5px; background:white; }
+    .item-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .item-title { display:flex; align-items:center; flex:1; min-width:0; }
+    .item-label { font-weight:500; font-size:12px; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .preview-box { font-size:9px; padding:4px 8px; border-radius:3px; border:1px solid #ccc; min-width:35px; text-align:center; font-weight:600; }
+    .controls { display:flex; gap:4px; align-items:center; margin-top:4px; }
+    .color-input-group { display:flex; flex-direction:column; gap:2px; }
+    .color-label { font-size:9px; color:#5f6368; text-transform:uppercase; font-weight:600; letter-spacing:0.3px; }
+    input[type="color"] { width:40px; height:24px; border:1px solid #ccc; border-radius:3px; padding:0; cursor:pointer; }
+    .btn-bold { cursor:pointer; color:#dadce0; padding:4px 6px; border-radius:3px; border:1px solid transparent; font-size:14px; font-weight:bold; min-width:28px; text-align:center; }
+    .btn-bold.active { color:var(--primary); background:#e8f0fe; font-weight:bold; }
+    .btn-reset, .btn-copy { background:#f8f9fa; border:1px solid #dadce0; border-radius:3px; padding:3px 5px; cursor:pointer; color:#5f6368; min-width:28px; display:flex; align-items:center; justify-content:center; }
+    .btn-reset:hover, .btn-copy:hover { background:#e8eaed; color:#202124; }
+    .btn-copy.copied { background:#e8f0fe; color:#1a73e8; }
+    .footer { background:white; padding:12px 16px; border-top:1px solid var(--border); position:fixed; bottom:0; width:100%; text-align:center; box-sizing:border-box; }
+    .btn-save { background:var(--primary); color:white; border:none; padding:10px 24px; border-radius:24px; cursor:pointer; width:100%; font-weight:500; }
+    .btn-save:disabled { background:#dadce0; cursor:not-allowed; }
+    #loading { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.95); z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .status-msg { margin-top:8px; font-size:12px; min-height:18px; }
+    
+    .guia-section { margin-bottom: 16px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; overflow: hidden; }
+    .guia-toggle { background: #f8f9fa; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: #444; border: none; width: 100%; text-align: left; }
+    .guia-toggle:hover { background: #f1f3f4; }
+    .guia-toggle .material-icons { transition: transform 0.2s; }
+    .guia-toggle.expanded .material-icons { transform: rotate(180deg); }
+    .guia-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .guia-content.show { max-height: 3000px; }
+    
+    /* Novo Guia Visual - Estrutura Limpa */
+    .guide-container { padding: 15px; background: #f7fafc; }
+    .guide-intro { background: white; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+    .guide-intro h4 { margin: 0 0 8px 0; font-size: 13px; color: #2c3e50; font-weight: 600; }
+    .guide-intro p { margin: 0; font-size: 11px; color: #4a5568; line-height: 1.5; }
+    
+    .layer-section { background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 12px; overflow: hidden; }
+    .layer-header { background: #2c3e50; color: white; padding: 10px 12px; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .layer-tag { font-size: 9px; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 10px; text-transform: uppercase; font-weight: 700; }
+    .layer-content { padding: 12px; }
+    
+    .status-item { display: grid; grid-template-columns: 50px 1fr auto; gap: 10px; align-items: start; padding: 10px; border-bottom: 1px solid #f1f3f4; }
+    .status-item:last-child { border-bottom: none; }
+    .status-color { width: 50px; height: 32px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.15); box-shadow: 0 1px 2px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
+    .status-color-bg { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
+    .status-info { flex: 1; }
+    .status-name { font-size: 11px; font-weight: 700; color: #2d3748; margin: 0 0 3px 0; }
+    .status-desc { font-size: 10px; color: #718096; margin: 0; line-height: 1.4; }
+    .status-hex { font-family: 'Courier New', monospace; font-size: 9px; color: #4a5568; background: #f7fafc; padding: 4px 6px; border-radius: 3px; border: 1px solid #e2e8f0; }
+    
+    .hierarchy-box { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 15px; margin-bottom: 15px; text-align: center; }
+    .hierarchy-title { font-size: 12px; font-weight: 600; color: #2c3e50; margin-bottom: 12px; }
+    .hierarchy-flow { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .hierarchy-level { padding: 8px 16px; border-radius: 4px; font-size: 11px; font-weight: 600; color: white; }
+    .hierarchy-arrow { color: #cbd5e0; font-weight: bold; font-size: 18px; }
+    
+    .example-section { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; margin-top: 12px; }
+    .example-title { font-size: 12px; font-weight: 600; color: #2c3e50; margin-bottom: 10px; }
+    .example-step { background: #f7fafc; padding: 10px; border-radius: 4px; border-left: 3px solid #cbd5e0; margin-bottom: 8px; }
+    .example-step:last-child { margin-bottom: 0; }
+    .example-step-title { font-size: 11px; font-weight: 600; color: #4a5568; margin-bottom: 5px; }
+    .example-step-content { font-size: 10px; color: #718096; }
+    .example-result { font-size: 10px; color: #2d3748; font-weight: 600; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div id="spin"><span class="material-icons" style="font-size:32px;color:#1a73e8;animation:spin 1s infinite linear;">refresh</span><p>Carregando...</p></div>
+    <div id="err" style="display:none;text-align:center;"><p id="err-txt" style="color:red;"></p><button onclick="location.reload()">Tentar Novamente</button></div>
+  </div>
+  <div id="app" style="display:none;">
+    <div class="header">
+      <label style="color:#5f6368;font-weight:500;font-size:12px;">Selecione a Lista:</label>
+      <select id="listaSelector"></select>
+      
+      <div style="margin-top:12px;padding:8px;background:#f1f3f4;border-radius:6px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:11px;color:#5f6368;font-weight:500;">Fonte Ativa:</span>
+        <label style="display:flex;align-items:center;cursor:pointer;gap:6px;">
+          <input type="checkbox" id="toggleFonte" style="width:auto;height:auto;" checked>
+          <span id="labelFonte" style="font-size:12px;font-weight:bold;color:#1a73e8;">Sidebar (Personalizado)</span>
+        </label>
+      </div>
+      
+      <details style="margin-top:12px;padding:8px;background:#f8f9fa;border:1px solid #dadce0;border-radius:8px;">
+        <summary style="cursor:pointer;font-weight:600;color:#202124;">Configuração em lote (JSON)</summary>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="btnExportJson" class="btn-copy" type="button">Exportar JSON</button>
+          <button id="btnImportJson" class="btn-reset" type="button">Importar JSON</button>
+        </div>
+        <textarea id="bulkJson" style="margin-top:10px;width:100%;height:160px;font-family:Consolas,monospace;font-size:11px;white-space:pre;" placeholder="Clique em Exportar JSON, edite em massa, e depois clique em Importar JSON."></textarea>
+        <div style="margin-top:6px;font-size:11px;color:#5f6368;">Nota: Importar substitui TODA a configuração salva (overwrite).</div>
+      </details>    
+    </div>
+    
+    <div class="content-scroll" id="dynamicContentArea">
+      <div class="guia-section">
+        <button class="guia-toggle" id="guiaToggle" onclick="toggleGuia()">
+          <span>📚 Guia Visual: Sistema de Cores e Status</span>
+          <span class="material-icons">expand_more</span>
+        </button>
+        <div class="guia-content" id="guiaContent">
+          <div class="guide-container">
+            
+            <!-- Introdução -->
+            <div class="guide-intro">
+              <h4>🎯 Hierarquia de Precedência</h4>
+              <p>Sistema de 3 camadas onde a cor mais crítica sempre prevalece na visualização.</p>
+            </div>
+            
+            <div class="hierarchy-box">
+              <div class="hierarchy-title">Ordem de Precedência Visual</div>
+              <div class="hierarchy-flow">
+                <span class="hierarchy-level" style="background: #e53e3e;">ENCERRAMENTO</span>
+                <span class="hierarchy-arrow">></span>
+                <span class="hierarchy-level" style="background: #ed8936;">EXCEÇÃO</span>
+                <span class="hierarchy-arrow">></span>
+                <span class="hierarchy-level" style="background: #4299e1;">ESTADO</span>
+              </div>
+            </div>
+            
+            <!-- Camada 1: Estados -->
+            <div class="layer-section">
+              <div class="layer-header">
+                <span>🔵 Camada 1: Estados Naturais</span>
+                <span class="layer-tag">Fluxo</span>
+              </div>
+              <div class="layer-content">
+                <p style="font-size:11px;color:#4a5568;margin-bottom:12px;">Progressão esperada do processo, sem exceções. Cores representam etapas normais.</p>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#6F42C1;">
+                    <div class="status-color-bg" style="color:white;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">EM PROSPECÇÃO</div>
+                    <div class="status-desc">Estado inicial - novidade/oportunidade</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #6F42C1<br>Texto: Branco
+                  </div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#26C6DA;">
+                    <div class="status-color-bg" style="color:black;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">A INTERNALIZAR</div>
+                    <div class="status-desc">Entrada na fila operacional</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #26C6DA<br>Texto: Preto
+                  </div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#78909C;">
+                    <div class="status-color-bg" style="color:white;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">INTERNALIZADO</div>
+                    <div class="status-desc">Ativo e organizado, processando</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #78909C<br>Texto: Branco
+                  </div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#F1C21B;">
+                    <div class="status-color-bg" style="color:black;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">EM ANÁLISE</div>
+                    <div class="status-desc">Fase sensível, avaliação em andamento</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #F1C21B<br>Texto: Preto
+                  </div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#2ECC71;">
+                    <div class="status-color-bg" style="color:black;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">CONTRATADO / CONCLUÍDO</div>
+                    <div class="status-desc">Sucesso final - processo aprovado</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #2ECC71<br>Texto: Preto
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Camada 2: Exceções -->
+            <div class="layer-section">
+              <div class="layer-header">
+                <span>⚠️ Camada 2: Marcadores de Atenção</span>
+                <span class="layer-tag">Exceções</span>
+              </div>
+              <div class="layer-content">
+                <p style="font-size:11px;color:#4a5568;margin-bottom:12px;">Exceções recuperáveis. Sobrescrevem visualização do estado sem alterá-lo.</p>
+                
+                <div style="background:#fffaf0;padding:10px;border-radius:4px;margin-bottom:10px;border-left:3px solid #ed8936;">
+                  <div style="font-size:11px;font-weight:600;color:#c05621;margin-bottom:4px;">Escala de Severidade</div>
+                  <div style="font-size:10px;color:#744210;line-height:1.4;">Progressão de gravidade crescente (amarelo → vermelho)</div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#FFF176;">
+                    <div class="status-color-bg" style="color:black;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">PENDÊNCIA LEVE</div>
+                    <div class="status-desc">Ajuste simples; "olhe quando der"</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #FFF176<br>Texto: Preto
+                  </div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#FFB300;">
+                    <div class="status-color-bg" style="color:black;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">PENDÊNCIA MODERADA</div>
+                    <div class="status-desc">Ameaça prazo; chama mais atenção</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #FFB300<br>Texto: Preto
+                  </div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#FF7043;">
+                    <div class="status-color-bg" style="color:white;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">PENDÊNCIA GRAVE</div>
+                    <div class="status-desc">Alto risco de inviabilizar; priorizar</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #FF7043<br>Texto: Branco
+                  </div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#E53935;">
+                    <div class="status-color-bg" style="color:white;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">BLOQUEIO CRÍTICO</div>
+                    <div class="status-desc">Travamento total; intervenção direta</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #E53935<br>Texto: Branco
+                  </div>
+                </div>
+                
+                <div style="background:#f0f4ff;padding:10px;border-radius:4px;margin-top:12px;border-left:3px solid #5a67d8;">
+                  <div style="font-size:11px;font-weight:600;color:#2c5282;margin-bottom:4px;">Marcadores Especiais</div>
+                  <div style="font-size:10px;color:#4a5568;line-height:1.4;">Natureza diferente da escala de severidade</div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#7E57C2;">
+                    <div class="status-color-bg" style="color:white;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">AGUARDANDO TERCEIROS</div>
+                    <div class="status-desc">Dependência externa; acompanhar/cobrar</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #7E57C2<br>Texto: Branco
+                  </div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#0062FF;">
+                    <div class="status-color-bg" style="color:white;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">AÇÃO IMEDIATA</div>
+                    <div class="status-desc">Executar agora; urgência sem conotar falha</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #0062FF<br>Texto: Branco
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Camada 3: Encerramentos -->
+            <div class="layer-section">
+              <div class="layer-header">
+                <span>🏁 Camada 3: Encerramentos Definitivos</span>
+                <span class="layer-tag">Terminais</span>
+              </div>
+              <div class="layer-content">
+                <p style="font-size:11px;color:#4a5568;margin-bottom:12px;">Estados terminais que sempre dominam visualização. Fim definitivo do processo.</p>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#2ECC71;">
+                    <div class="status-color-bg" style="color:black;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">SUCESSO</div>
+                    <div class="status-desc">Processo concluído positivamente</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #2ECC71<br>Texto: Preto
+                  </div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#DA1E28;">
+                    <div class="status-color-bg" style="color:white;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">INDEFERIDO / NEGADO</div>
+                    <div class="status-desc">Decisão negativa técnica definitiva</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #DA1E28<br>Texto: Branco
+                  </div>
+                </div>
+                
+                <div class="status-item">
+                  <div class="status-color" style="background:#353A40;">
+                    <div class="status-color-bg" style="color:white;">ABC</div>
+                  </div>
+                  <div class="status-info">
+                    <div class="status-name">CANCELADO / ARQUIVADO</div>
+                    <div class="status-desc">Encerramento administrativo (não é erro)</div>
+                  </div>
+                  <div class="status-hex">
+                    Fundo: #353A40<br>Texto: Branco
+                  </div>
+                </div>
+                
+                <div style="background:#fff5f5;padding:10px;border-radius:4px;margin-top:12px;border-left:3px solid #e53e3e;">
+                  <div style="font-size:11px;font-weight:600;color:#c53030;margin-bottom:4px;">⚠️ Importante: Distinção para KPIs</div>
+                  <div style="font-size:10px;color:#742a2a;line-height:1.4;">
+                    <strong>NEGADO:</strong> Conta em "taxa de indeferimento"<br>
+                    <strong>CANCELADO:</strong> Conta em "taxa de cancelamento"<br>
+                    <em>Nunca misturar - contamina métricas</em>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Exemplo Prático -->
+            <div class="example-section">
+              <div class="example-title">📚 Exemplo Prático: Como a Hierarquia Funciona</div>
+              
+              <div class="example-step">
+                <div class="example-step-title">Situação 1: Processo Normal</div>
+                <div class="example-step-content">
+                  Estado: <code>EM ANÁLISE</code> | Exceção: (nenhuma)
+                </div>
+                <div class="example-result">
+                  → Cor: <span style="background:#F1C21B;color:black;padding:2px 8px;border-radius:3px;font-family:monospace;">#F1C21B (amarelo)</span>
+                </div>
+              </div>
+              
+              <div class="example-step">
+                <div class="example-step-title">Situação 2: Processo com Pendência Leve</div>
+                <div class="example-step-content">
+                  Estado: <code>EM ANÁLISE</code> | Exceção: <code>FALTA DOCUMENTOS</code>
+                </div>
+                <div class="example-result">
+                  → Cor: <span style="background:#FFF176;color:black;padding:2px 8px;border-radius:3px;font-family:monospace;">#FFF176 (amarelo claro)</span> ← Camada 2 sobrescreve
+                </div>
+              </div>
+              
+              <div class="example-step">
+                <div class="example-step-title">Situação 3: Processo Bloqueado Criticamente</div>
+                <div class="example-step-content">
+                  Estado: <code>EM ANÁLISE</code> | Exceção: <code>RESTRITIVOS</code>
+                </div>
+                <div class="example-result">
+                  → Cor: <span style="background:#E53935;color:white;padding:2px 8px;border-radius:3px;font-family:monospace;">#E53935 (vermelho)</span> ← Camada 2 sobrescreve
+                </div>
+              </div>
+              
+              <div class="example-step">
+                <div class="example-step-title">Situação 4: Processo Indeferido</div>
+                <div class="example-step-content">
+                  Estado: <code>EM ANÁLISE</code> | Exceção: <code>BLOQUEIO</code> | Decisão: <code>INDEFERIDO</code>
+                </div>
+                <div class="example-result">
+                  → Cor: <span style="background:#DA1E28;color:white;padding:2px 8px;border-radius:3px;font-family:monospace;">#DA1E28 (vermelho forte)</span> ← Camada 3 domina TUDO
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <p style="text-align:center;color:#888;margin-top:40px;">Selecione uma opção acima.</p>
+    </div>
+    
+    <div class="footer">
+      <button id="saveBtn" class="btn-save" onclick="salvar()" disabled><span class="material-icons" style="vertical-align:middle;font-size:18px;">save</span> SALVAR ALTERAÇÕES</button>
+      <div id="statusMsg" class="status-msg"></div>
+    </div>
+  </div>
+  <style>@keyframes spin{100%{transform:rotate(360deg);}}</style>
+  <script>
+    let GLOBAL_DATA = {};
+    let CURRENT_LIST_ID = null;
+    let FONTE_ATIVA = 'SIDEBAR';
+    let CLIPBOARD_FORMAT = null;
+    
+    function normalizeKey(str) {
+      return (str || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toUpperCase();
+    }
+    
+    function toggleGuia() {
+      const content = document.getElementById('guiaContent');
+      const toggle = document.getElementById('guiaToggle');
+      if (content.classList.contains('show')) {
+        content.classList.remove('show');
+        toggle.classList.remove('expanded');
+      } else {
+        content.classList.add('show');
+        toggle.classList.add('expanded');
+      }
+    }
+    
+    function setStatus(msg, color) {
+      const el = document.getElementById('statusMsg');
+      el.textContent = msg;
+      el.style.color = color || '#333';
+    }
+    
+    function showError(msg) {
+      document.getElementById('spin').style.display = 'none';
+      document.getElementById('err').style.display = 'block';
+      document.getElementById('err-txt').textContent = msg;
+    }
+    
+    function carregarDados() {
+      google.script.run
+        .withSuccessHandler(init)
+        .withFailureHandler(function(e) {
+          showError(e.message || e);
+        })
+        .getDadosConfiguracao();
+    }
+    
+    function init(res) {
+      if (!res.sucesso) return showError(res.erro);
+      GLOBAL_DATA = res.dados;
+      const sel = document.getElementById('listaSelector');
+      sel.innerHTML = '<option value="">-- Selecione --</option>';
+      Object.keys(GLOBAL_DATA).sort().forEach(function(id) {
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.text = GLOBAL_DATA[id].nomeExibicao;
+        sel.appendChild(opt);
+      });
+      sel.onchange = function(e) {
+        render(e.target.value);
+      };
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+    }
+    
+    function render(id) {
+      CURRENT_LIST_ID = id;
+      const area = document.getElementById('dynamicContentArea');
+      const btn = document.getElementById('saveBtn');
+      const guiaSection = area.querySelector('.guia-section');
+      area.innerHTML = '';
+      if (guiaSection) area.appendChild(guiaSection);
+      setStatus('');
+      
+      if (!id) { 
+        btn.disabled = true; 
+        return; 
+      }
+      btn.disabled = false;
+      const data = GLOBAL_DATA[id];
+      const cfg = data.configuracaoAtual || { cores: {}, coresSubcategoria: {} };
+      const hier = data.hierarquia || {};
+      if (Object.keys(hier).length === 0) { 
+        area.innerHTML += '<p style="text-align:center;color:#999">Lista vazia na aba DADOS.</p>'; 
+        return; 
+      }
+      Object.keys(hier).forEach(function(cat) {
+        const div = document.createElement('div');
+        div.className = 'group-container';
+        const cRow = document.createElement('div');
+        cRow.className = 'cat-row';
+        cRow.appendChild(createCtrl(cat, cfg.cores[cat], 'cores', 'Categoria'));
+        div.appendChild(cRow);
+        const subs = hier[cat];
+        if (subs && subs.length) {
+          const sList = document.createElement('div');
+          sList.className = 'sub-list';
+          subs.forEach(function(s) {
+            const sRow = document.createElement('div');
+            sRow.className = 'sub-row';
+            sRow.appendChild(createCtrl(s, cfg.coresSubcategoria[s], 'coresSubcategoria', 'Subcategoria'));
+            sList.appendChild(sRow);
+          });
+          div.appendChild(sList);
+        }
+        area.appendChild(div);
+      });
+    }
+    
+    function createCtrl(lbl, c, type, role) {
+      const el = document.createElement('div');
+      el.className = 'editor-item';
+      el.dataset.keyRaw = lbl;
+      el.dataset.keyNorm = normalizeKey(lbl);
+      el.dataset.type = type;
+      const bg = (c && c.fundo) ? c.fundo.toLowerCase() : '#ffffff';
+      const txt = (c && c.texto) ? c.texto.toLowerCase() : '#000000';
+      const bld = (c && c.negrito) ? 'active' : '';
+      const st = 'background:' + bg + ';color:' + txt + ';font-weight:' + (c && c.negrito ? 'bold' : 'normal');
+      
+      el.innerHTML = '<div class="item-header">' +
+        '<div class="item-title">' + 
+        (role === 'Subcategoria' ? '<span class="material-icons" style="font-size:14px;color:#aaa;margin-right:4px;flex-shrink:0;">subdirectory_arrow_right</span>' : '') +
+        '<span class="item-label">' + lbl + '</span>' +
+        '</div>' +
+        '<div class="preview-box" style="' + st + '">ABC</div>' +
+        '</div>' +
+        '<div class="controls">' +
+        '<div class="color-input-group">' +
+        '<span class="color-label">Fundo</span>' +
+        '<input type="color" class="inp-bg" value="' + bg + '">' +
+        '</div>' +
+        '<div class="color-input-group">' +
+        '<span class="color-label">Texto</span>' +
+        '<input type="color" class="inp-txt" value="' + txt + '">' +
+        '</div>' +
+        '<div class="btn-bold ' + bld + '">B</div>' +
+        '<button class="btn-copy" title="Copiar formatação"><span class="material-icons" style="font-size:14px;">content_copy</span></button>' +
+        '<button class="btn-reset" title="Resetar"><span class="material-icons" style="font-size:14px;">refresh</span></button>' +
+        '</div>';
+      
+      const iBg = el.querySelector('.inp-bg');
+      const iTxt = el.querySelector('.inp-txt');
+      const btn = el.querySelector('.btn-bold');
+      const btnCopy = el.querySelector('.btn-copy');
+      const btnReset = el.querySelector('.btn-reset');
+      const prev = el.querySelector('.preview-box');
+      
+      const upd = function() {
+        prev.style.backgroundColor = iBg.value;
+        prev.style.color = iTxt.value;
+        prev.style.fontWeight = btn.classList.contains('active') ? 'bold' : 'normal';
+      };
+      
+      iBg.oninput = upd;
+      iTxt.oninput = upd;
+      btn.onclick = function() { 
+        btn.classList.toggle('active'); 
+        upd(); 
+      };
+      
+      btnCopy.onclick = function() {
+        CLIPBOARD_FORMAT = {
+          bg: iBg.value,
+          txt: iTxt.value,
+          bold: btn.classList.contains('active')
+        };
+        
+        document.querySelectorAll('.btn-copy').forEach(function(b) {
+          b.classList.remove('copied');
+        });
+        btnCopy.classList.add('copied');
+        setStatus('✅ Formatação copiada! Clique em outro item para colar.', 'green');
+        
+        document.querySelectorAll('.editor-item').forEach(function(item) {
+          if (item !== el) {
+            item.style.cursor = 'pointer';
+            item.style.boxShadow = '0 0 0 2px #1a73e8';
+            item.onclick = function() {
+              pasteFormat(item);
+            };
+          }
+        });
+      };
+      
+      btnReset.onclick = function() {
+        iBg.value = '#ffffff';
+        iTxt.value = '#000000';
+        btn.classList.remove('active');
+        upd();
+      };
+      
+      return el;
+    }
+    
+    function pasteFormat(targetEl) {
+      if (!CLIPBOARD_FORMAT) return;
+      
+      const iBg = targetEl.querySelector('.inp-bg');
+      const iTxt = targetEl.querySelector('.inp-txt');
+      const btn = targetEl.querySelector('.btn-bold');
+      const prev = targetEl.querySelector('.preview-box');
+      
+      iBg.value = CLIPBOARD_FORMAT.bg;
+      iTxt.value = CLIPBOARD_FORMAT.txt;
+      if (CLIPBOARD_FORMAT.bold) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+      
+      prev.style.backgroundColor = CLIPBOARD_FORMAT.bg;
+      prev.style.color = CLIPBOARD_FORMAT.txt;
+      prev.style.fontWeight = CLIPBOARD_FORMAT.bold ? 'bold' : 'normal';
+      
+      document.querySelectorAll('.editor-item').forEach(function(item) {
+        item.style.cursor = '';
+        item.style.boxShadow = '';
+        item.onclick = null;
+      });
+      
+      document.querySelectorAll('.btn-copy').forEach(function(b) {
+        b.classList.remove('copied');
+      });
+      
+      setStatus('✅ Formatação aplicada!', 'green');
+      setTimeout(function() { setStatus(''); }, 1500);
+    }
+    
+    function salvar() {
+      if (!CURRENT_LIST_ID) return;
+      if (FONTE_ATIVA === 'CONFIG') {
+        setStatus('❌ Não é possível salvar no modo CONFIG', 'red');
+        return;
+      }
+      
+      const nova = { cores: {}, coresSubcategoria: {} };
+      const els = document.querySelectorAll('.editor-item');
+      
+      els.forEach(function(el) {
+        const keyRaw = el.dataset.keyRaw;
+        const type = el.dataset.type;
+        
+        if (!type || (type !== 'cores' && type !== 'coresSubcategoria')) {
+          console.warn('Tipo inválido para item:', keyRaw);
+          return;
+        }
+        
+        const bg = el.querySelector('.inp-bg').value.toLowerCase();
+        const txt = el.querySelector('.inp-txt').value.toLowerCase();
+        const bold = el.querySelector('.btn-bold').classList.contains('active');
+        const isNeutral = (bg === '#ffffff' && txt === '#000000' && !bold);
+        
+        if (!isNeutral) {
+          if (!nova[type]) nova[type] = {};
+          nova[type][keyRaw] = { fundo: bg, texto: txt, negrito: bold };
+        }
+      });
+      
+      const payload = {};
+      payload[CURRENT_LIST_ID] = nova;
+      setStatus('Salvando...', 'orange');
+      document.getElementById('saveBtn').disabled = true;
+      
+      google.script.run
+        .withSuccessHandler(function(res) {
+           document.getElementById('saveBtn').disabled = false;
+           if(res.sucesso) {
+             setStatus('✅ Salvo com sucesso!', 'green');
+             if(GLOBAL_DATA[CURRENT_LIST_ID]) {
+                 GLOBAL_DATA[CURRENT_LIST_ID].configuracaoSalva = nova;
+                 GLOBAL_DATA[CURRENT_LIST_ID].configuracaoAtual = nova; 
+             }
+             setTimeout(function() { setStatus('', ''); }, 1500);
+           } else {
+             setStatus('❌ Erro: ' + res.erro, 'red');
+           }
+        })
+        .withFailureHandler(function(e) {
+           document.getElementById('saveBtn').disabled = false;
+           setStatus('❌ Falha: ' + e, 'red');
+        })
+        .salvarConfiguracaoCores(payload);
+    }
+    
+    function exportarJson() {
+      setStatus('⏳ Exportando JSON...');
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (!res || !res.sucesso) {
+            setStatus('❌ Falha ao exportar: ' + (res && res.erro ? res.erro : 'erro desconhecido'), 'red');
+            return;
+          }
+          document.getElementById('bulkJson').value = res.json || '{}';
+          setStatus('✅ JSON exportado.');
+        })
+        .withFailureHandler(function(e) {
+          setStatus('❌ Falha ao exportar: ' + (e && e.message ? e.message : e), 'red');
+        })
+        .exportarConfiguracaoCores();
+    }
+
+    function importarJson() {
+      const txt = document.getElementById('bulkJson').value || '';
+      if (!txt.trim()) {
+        setStatus('⚠️ Cole um JSON antes de importar.', 'orange');
+        return;
+      }
+
+      setStatus('⏳ Importando JSON...');
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (!res || !res.sucesso) {
+            setStatus('❌ Falha ao importar: ' + (res && res.erro ? res.erro : 'erro desconhecido'), 'red');
+            return;
+          }
+          setStatus('✅ Importado. Listas: ' + (res.totalListas || 0));
+          carregarDados();
+        })
+        .withFailureHandler(function(e) {
+          setStatus('❌ Falha ao importar: ' + (e && e.message ? e.message : e), 'red');
+        })
+        .importarConfiguracaoCores(txt);
+    }
+    
+    window.onload = function() {
+      if (typeof google === 'undefined') { 
+        showError("Ambiente desconhecido."); 
+        return; 
+      }
+      carregarDados();
+
+      document.getElementById('btnExportJson').addEventListener('click', exportarJson);
+      document.getElementById('btnImportJson').addEventListener('click', importarJson);
+      
+      document.getElementById('toggleFonte').addEventListener('change', function(e) {
+        FONTE_ATIVA = e.target.checked ? 'SIDEBAR' : 'CONFIG';
+        const label = document.getElementById('labelFonte');
+        const area = document.getElementById('dynamicContentArea');
+        
+        if (FONTE_ATIVA === 'CONFIG') {
+          label.textContent = 'CONFIG (Padrão)';
+          label.style.color = '#5f6368';
+          area.style.opacity = '0.5';
+          area.style.pointerEvents = 'none';
+          setStatus('⚠️ Modo CONFIG: Editores desabilitados', 'orange');
+        } else {
+          label.textContent = 'Sidebar (Personalizado)';
+          label.style.color = '#1a73e8';
+          area.style.opacity = '1';
+          area.style.pointerEvents = 'auto';
+          setStatus('');
+        }
+        if (CURRENT_LIST_ID) render(CURRENT_LIST_ID);
+      });
+    };
+  </script>
+</body>
+</html>
