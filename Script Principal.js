@@ -904,7 +904,7 @@ SHEETS: {
 
       VISOES: {
         COMPLETO: "TODAS",
-        OPERACIONAL: ["B", "C", "E", "F", "G", "H", "J"]
+        OPERACIONAL: ["B", "C", "E", "F", "G", "H", "J", "K"]
       },
 
       LISTAS_SUSPENSAS: [
