@@ -1,7 +1,8 @@
 /**
  * ████████████████████████████████████████████████████████████████████████
- * ▶ DROPDOWNMANAGER - VERSÃO CORRIGIDA (Herança de Cores Robusta)
- * ▶ Garantias: ID, Persistência, Lógica de Cores e Colunas AA+ Validadas
+ * ▶ DROPDOWNMANAGER - VERSÃO ORIGINAL MODIFICADA
+ * ▶ Estrutura original mantida (Cache, Utils, Lógica Verbosa)
+ * ▶ MODIFICAÇÃO APLICADA: Limpeza estrita de formatação em subcategorias vazias
  * ████████████████████████████████████████████████████████████████████████
  */
 
@@ -29,15 +30,11 @@ const DropdownManager = {
     }
   },
 
-  // ✅ CORREÇÃO #3: Função idêntica ao backend.js (arrow function)
   _gerarIdLista: (nomeAba, nomeColuna) => {
     const norm = (str) => (str || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toUpperCase();
     return `${norm(nomeAba)}_${norm(nomeColuna)}`;
   },
 
-  /**
-   * ✅ CORREÇÃO #4: Helper Robusto para colunas com fallback garantido
-   */
   _colParaIdx: (c) => {
     if(typeof c === 'number') return c;
     // Tenta Utils primeiro
@@ -131,7 +128,6 @@ const DropdownManager = {
 
   /**
    * Obtém configuração de cores dinâmica (OnEdit)
-   * ✅ NOVO: Respeita toggle de fonte (Sidebar vs CONFIG)
    */
   _obterConfigCoresDinamica: (configBase, listaId) => {
     try {
@@ -163,7 +159,6 @@ const DropdownManager = {
       const idFinal = listaId || DropdownManager._gerarIdLista(configBase.nomeAba, configBase.colunaCategoria);
       const saved = getSaved(idFinal);
       
-      // ✅ NOVO: Se há configuração salva (Sidebar), usa APENAS ela
       if (saved && (Object.keys(saved.cores || {}).length > 0 || Object.keys(saved.coresSubcategoria || {}).length > 0)) {
         return {
           ...configBase,
@@ -172,7 +167,6 @@ const DropdownManager = {
         };
       }
       
-      // ✅ Fallback: Sem configuração salva = usa CONFIG
       return {
         ...configBase,
         cores: configBase.cores || {},
@@ -299,7 +293,6 @@ const DropdownManager = {
         .setHelpText(`Lista ${num}`)
         .build();
       
-      // Tenta range total, fallback para parcial
       try {
         aba.getRange(linhaInicial, coluna, aba.getMaxRows() - linhaInicial + 1, 1).setDataValidation(validacao);
       } catch (e) {
@@ -345,7 +338,7 @@ const DropdownManager = {
     }
   },
 
-  // === SUBCATEGORIAS (LÓGICA RESTAURADA) ===
+  // === SUBCATEGORIAS ===
 
   _criarSubcategoria: (sheet, linha, config, categoria) => {
     try {
@@ -355,7 +348,9 @@ const DropdownManager = {
       // Busca Subcategorias Reais
       const subcategorias = DropdownManager._lerSubcategorias(config, categoria);
 
+      // Limpa conteúdo E FORMATAÇÃO (MODIFICAÇÃO SOLICITADA)
       rangeSub.clearContent();
+      rangeSub.setBackground(null).setFontColor(null).setFontWeight(null); 
 
       if (subcategorias.length > 0) {
         const regra = SpreadsheetApp.newDataValidation()
@@ -365,6 +360,7 @@ const DropdownManager = {
         rangeSub.setDataValidation(regra);
       } else {
         rangeSub.clearDataValidations();
+        // A formatação já foi limpa acima
       }
       return subcategorias;
     } catch (e) {
@@ -419,7 +415,8 @@ const DropdownManager = {
     }
   },
 
-  // ✅ CORREÇÃO #5: Lógica de Cores com validação defensiva
+  // === APLICAÇÃO DE CORES (MODIFICADA) ===
+  
   _aplicarCor: (sheet, linha, configBase, categoria) => {
     try {
       const listaId = DropdownManager._gerarIdLista(configBase.nomeAba, configBase.colunaCategoria);
@@ -438,7 +435,6 @@ const DropdownManager = {
       const corCat = (config.cores && valCat) ? DropdownManager._mapCor(config.cores, valCat) : null;
       const corSub = (config.coresSubcategoria && temSub) ? DropdownManager._mapCor(config.coresSubcategoria, valSub) : null;
 
-      // ✅ Validação robusta: verifica existência de propriedades antes de toLowerCase()
       const ehNeutro = (c) => {
         if (!c || typeof c !== 'object') return true;
         if (!c.fundo || !c.texto) return true;
@@ -455,10 +451,18 @@ const DropdownManager = {
       else if (valido(corCat)) final = corCat;
 
       if (final) {
+        // Pinta a Categoria
         rCat.setBackground(final.fundo).setFontColor(final.texto).setFontWeight(final.negrito ? 'bold' : 'normal');
-        if (rSub) rSub.setBackground(final.fundo).setFontColor(final.texto).setFontWeight(final.negrito ? 'bold' : 'normal');
+        
+        // MODIFICAÇÃO: Só pinta a Subcategoria se houver valor selecionado
+        if (rSub && temSub) {
+           rSub.setBackground(final.fundo).setFontColor(final.texto).setFontWeight(final.negrito ? 'bold' : 'normal');
+        } else if (rSub) {
+           // Se a subcategoria estiver vazia, garante limpeza
+           rSub.setBackground(null).setFontColor(null).setFontWeight(null);
+        }
       } else {
-        // Cor neutra: limpa formatação (revela formatação condicional)
+        // Cor neutra: limpa formatação
         rCat.setBackground(null).setFontColor(null).setFontWeight(null);
         if (rSub) rSub.setBackground(null).setFontColor(null).setFontWeight(null);
       }
@@ -508,7 +512,7 @@ function resetDropdownCompleto() {
 function resetDropdownCompletoDetalhes() {
   const res = resetDropdownCompleto();
   if (typeof SpreadsheetApp !== 'undefined') {
-     SpreadsheetApp.getUi().alert("Reset completo realizado com sucesso (Detalhes).");
+      SpreadsheetApp.getUi().alert("Reset completo realizado com sucesso (Detalhes).");
   }
   return res;
 }
