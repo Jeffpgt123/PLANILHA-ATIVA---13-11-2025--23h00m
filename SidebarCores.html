@@ -250,9 +250,28 @@
         prev.style.color = iTxt.value;
         prev.style.fontWeight = btn.classList.contains('active') ? 'bold' : 'normal';
       };
+
+      // --- NOVA LÓGICA DE INTERAÇÃO (Item 2.2) ---
+      // Monitora mudanças de cor. Se o usuário escolher uma cor diferente do "neutro"
+      // (Branco para fundo, Preto para texto), ativamos o negrito automaticamente.
+      const handleColorChange = function() {
+        const currentBg = iBg.value.toLowerCase();
+        const currentTxt = iTxt.value.toLowerCase();
+        
+        // Se NÃO for neutro...
+        if (currentBg !== '#ffffff' || currentTxt !== '#000000') {
+           // ...e o botão não estiver ativo, ativa-o.
+           if (!btn.classList.contains('active')) {
+              btn.classList.add('active');
+           }
+        }
+        // Atualiza a pré-visualização
+        upd();
+      };
       
-      iBg.oninput = upd;
-      iTxt.oninput = upd;
+      iBg.oninput = handleColorChange;
+      iTxt.oninput = handleColorChange;
+      
       btn.onclick = function() { 
         btn.classList.toggle('active'); 
         upd(); 
