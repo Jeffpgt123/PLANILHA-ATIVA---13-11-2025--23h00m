@@ -4,57 +4,57 @@
   <base target="_top">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Roboto', sans-serif; padding: 0; margin: 0; background: #f7fafc; color: #2d3748; }
+    body { font-family: 'Roboto', sans-serif; padding: 0; margin: 0; background: #f7fafc; color: #2d3748; font-size: 15px; }
     
-    .guide-container { padding: 15px; }
-    .guide-intro { background: white; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
-    .guide-intro h4 { margin: 0 0 8px 0; font-size: 14px; color: #2c3e50; font-weight: 700; }
-    .guide-intro p { margin: 0; font-size: 12px; color: #4a5568; line-height: 1.5; }
+    .guide-container { padding: 20px; max-width: 900px; margin: 0 auto; }
+    .guide-intro { background: white; padding: 18px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+    .guide-intro h4 { margin: 0 0 10px 0; font-size: 20px; color: #2c3e50; font-weight: 700; }
+    .guide-intro p { margin: 0; font-size: 15px; color: #4a5568; line-height: 1.6; }
     
-    .layer-section { background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 12px; overflow: hidden; }
-    .layer-header { background: #2c3e50; color: white; padding: 10px 12px; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-    .layer-tag { font-size: 9px; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 10px; text-transform: uppercase; font-weight: 700; }
-    .layer-content { padding: 12px; }
-    .layer-content p { font-size: 11px; color: #4a5568; margin: 0 0 12px 0; }
+    .layer-section { background: white; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 18px; overflow: hidden; }
+    .layer-header { background: #2c3e50; color: white; padding: 14px 18px; font-size: 16px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .layer-tag { font-size: 11px; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 12px; text-transform: uppercase; font-weight: 700; }
+    .layer-content { padding: 18px; }
+    .layer-content p { font-size: 14px; color: #4a5568; margin: 0 0 16px 0; }
 
-    .status-item { display: grid; grid-template-columns: 50px 1fr auto; gap: 10px; align-items: start; padding: 10px; border-bottom: 1px solid #f1f3f4; }
+    .status-item { display: grid; grid-template-columns: 70px 1fr auto; gap: 14px; align-items: start; padding: 14px; border-bottom: 1px solid #f1f3f4; }
     .status-item:last-child { border-bottom: none; }
-    .status-color { width: 50px; height: 32px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.15); box-shadow: 0 1px 2px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
-    .status-color-bg { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
+    .status-color { width: 70px; height: 45px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
+    .status-color-bg { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; }
     .status-info { flex: 1; }
-    .status-name { font-size: 11px; font-weight: 700; color: #2d3748; margin: 0 0 3px 0; }
-    .status-desc { font-size: 10px; color: #718096; margin: 0; line-height: 1.4; }
-    .status-hex { font-family: 'Courier New', monospace; font-size: 9px; color: #4a5568; background: #f7fafc; padding: 4px 6px; border-radius: 3px; border: 1px solid #e2e8f0; white-space: nowrap; }
+    .status-name { font-size: 14px; font-weight: 700; color: #2d3748; margin: 0 0 5px 0; }
+    .status-desc { font-size: 13px; color: #718096; margin: 0; line-height: 1.5; }
+    .status-hex { font-family: 'Courier New', monospace; font-size: 11px; color: #4a5568; background: #f7fafc; padding: 6px 8px; border-radius: 4px; border: 1px solid #e2e8f0; white-space: nowrap; }
     
-    .hierarchy-box { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 15px; margin-bottom: 15px; text-align: center; }
-    .hierarchy-title { font-size: 12px; font-weight: 600; color: #2c3e50; margin-bottom: 12px; }
-    .hierarchy-flow { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
-    .hierarchy-level { padding: 8px 16px; border-radius: 4px; font-size: 11px; font-weight: 600; color: white; }
-    .hierarchy-arrow { color: #cbd5e0; font-weight: bold; font-size: 18px; }
+    .hierarchy-box { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: center; }
+    .hierarchy-title { font-size: 16px; font-weight: 600; color: #2c3e50; margin-bottom: 16px; }
+    .hierarchy-flow { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .hierarchy-level { padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; color: white; }
+    .hierarchy-arrow { color: #cbd5e0; font-weight: bold; font-size: 24px; }
     
-    .quick-guide { background: #e6fffa; border: 2px solid #81e6d9; border-radius: 6px; padding: 12px; margin-bottom: 15px; }
-    .quick-guide-title { font-size: 12px; font-weight: 700; color: #234e52; margin-bottom: 10px; }
-    .quick-question { background: white; padding: 8px 10px; border-radius: 4px; margin-bottom: 8px; border-left: 3px solid #38b2ac; }
-    .quick-question-title { font-size: 11px; font-weight: 600; color: #2c7a7b; margin-bottom: 4px; }
-    .quick-options { font-size: 10px; color: #4a5568; line-height: 1.6; }
-    .quick-options div { margin-bottom: 2px; }
+    .quick-guide { background: #e6fffa; border: 2px solid #81e6d9; border-radius: 8px; padding: 18px; margin-bottom: 20px; }
+    .quick-guide-title { font-size: 16px; font-weight: 700; color: #234e52; margin-bottom: 14px; }
+    .quick-question { background: white; padding: 12px 14px; border-radius: 6px; margin-bottom: 12px; border-left: 4px solid #38b2ac; }
+    .quick-question-title { font-size: 14px; font-weight: 600; color: #2c7a7b; margin-bottom: 8px; }
+    .quick-options { font-size: 13px; color: #4a5568; line-height: 1.8; }
+    .quick-options div { margin-bottom: 4px; }
     
-    .concept-box { background: #fff5f7; border: 2px solid #feb2b2; border-radius: 6px; padding: 12px; margin-bottom: 15px; }
-    .concept-title { font-size: 12px; font-weight: 700; color: #742a2a; margin-bottom: 8px; }
-    .concept-text { font-size: 10px; color: #4a5568; line-height: 1.5; margin-bottom: 6px; }
-    .concept-example { background: white; padding: 8px; border-radius: 4px; font-size: 10px; margin-top: 8px; }
-    .concept-vs { display: flex; gap: 10px; margin-top: 8px; }
-    .concept-vs-item { flex: 1; background: white; padding: 8px; border-radius: 4px; }
-    .concept-vs-label { font-weight: 700; font-size: 10px; margin-bottom: 4px; }
-    .concept-vs-text { font-size: 9px; color: #718096; }
+    .concept-box { background: #fff5f7; border: 2px solid #feb2b2; border-radius: 8px; padding: 18px; margin-bottom: 20px; }
+    .concept-title { font-size: 16px; font-weight: 700; color: #742a2a; margin-bottom: 12px; }
+    .concept-text { font-size: 13px; color: #4a5568; line-height: 1.6; margin-bottom: 10px; }
+    .concept-example { background: white; padding: 12px; border-radius: 6px; font-size: 13px; margin-top: 12px; }
+    .concept-vs { display: flex; gap: 14px; margin-top: 12px; }
+    .concept-vs-item { flex: 1; background: white; padding: 12px; border-radius: 6px; }
+    .concept-vs-label { font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+    .concept-vs-text { font-size: 12px; color: #718096; }
     
-    .alert-box { padding:10px; border-radius:4px; margin-top:12px; border-left-width:3px; border-left-style:solid; }
+    .alert-box { padding:14px; border-radius:6px; margin-top:16px; border-left-width:4px; border-left-style:solid; }
     .alert-orange { background:#fffaf0; border-left-color:#ed8936; }
     .alert-blue { background:#f0f4ff; border-left-color:#5a67d8; }
     .alert-red { background:#fff5f5; border-left-color:#e53e3e; }
     .alert-green { background:#f0fff4; border-left-color:#48bb78; }
-    .alert-title { font-size:11px; font-weight:600; margin-bottom:4px; }
-    .alert-text { font-size:10px; line-height:1.4; }
+    .alert-title { font-size:14px; font-weight:600; margin-bottom:6px; }
+    .alert-text { font-size:13px; line-height:1.6; }
     
     .c-orange { color:#c05621; } .c-brown { color:#744210; }
     .c-blue { color:#2c5282; }
@@ -314,28 +314,28 @@
         <span>📚 Exemplo Prático: Como a Hierarquia Funciona</span>
       </div>
       <div class="layer-content">
-        <div class="concept-example" style="background:#f7fafc;padding:10px;border-radius:4px;margin-bottom:8px;">
-          <div style="font-weight:600;margin-bottom:6px;font-size:11px;">Situação 1: Processo Normal</div>
-          <div style="font-size:10px;color:#4a5568;">Estado: <code>INTERNALIZADO</code> | Exceção: (nenhuma)</div>
-          <div style="font-size:10px;font-weight:600;margin-top:4px;">→ Cor: <span style="background:#95A5A6;color:white;padding:2px 8px;border-radius:3px;font-family:monospace;">#95A5A6 (cinza)</span></div>
+        <div class="concept-example" style="background:#f7fafc;padding:14px;border-radius:4px;margin-bottom:12px;">
+          <div style="font-weight:600;margin-bottom:6px;font-size:14px;">Situação 1: Processo Normal</div>
+          <div style="font-size:13px;color:#4a5568;">Estado: <code>INTERNALIZADO</code> | Exceção: (nenhuma)</div>
+          <div style="font-size:13px;font-weight:600;margin-top:4px;">→ Cor: <span style="background:#95A5A6;color:white;padding:4px 10px;border-radius:3px;font-family:monospace;">#95A5A6 (cinza)</span></div>
         </div>
         
-        <div class="concept-example" style="background:#f7fafc;padding:10px;border-radius:4px;margin-bottom:8px;">
-          <div style="font-weight:600;margin-bottom:6px;font-size:11px;">Situação 2: Processo com Pendência Leve</div>
-          <div style="font-size:10px;color:#4a5568;">Estado: <code>INTERNALIZADO</code> | Exceção: <code>FALTA DOCUMENTOS</code></div>
-          <div style="font-size:10px;font-weight:600;margin-top:4px;">→ Cor: <span style="background:#FFF176;color:black;padding:2px 8px;border-radius:3px;font-family:monospace;">#FFF176 (amarelo claro)</span> ← Camada 2 sobrescreve</div>
+        <div class="concept-example" style="background:#f7fafc;padding:14px;border-radius:4px;margin-bottom:12px;">
+          <div style="font-weight:600;margin-bottom:6px;font-size:14px;">Situação 2: Processo com Pendência Leve</div>
+          <div style="font-size:13px;color:#4a5568;">Estado: <code>INTERNALIZADO</code> | Exceção: <code>FALTA DOCUMENTOS</code></div>
+          <div style="font-size:13px;font-weight:600;margin-top:4px;">→ Cor: <span style="background:#FFF176;color:black;padding:4px 10px;border-radius:3px;font-family:monospace;">#FFF176 (amarelo claro)</span> ← Camada 2 sobrescreve</div>
         </div>
         
-        <div class="concept-example" style="background:#f7fafc;padding:10px;border-radius:4px;margin-bottom:8px;">
-          <div style="font-weight:600;margin-bottom:6px;font-size:11px;">Situação 3: Ação do Usuário Necessária</div>
-          <div style="font-size:10px;color:#4a5568;">Estado: <code>CONFEC. PROPOSTA</code> | Subcategoria: <code>CONFEC. LISTA DOCS</code></div>
-          <div style="font-size:10px;font-weight:600;margin-top:4px;">→ Cor: <span style="background:#00BFA5;color:black;padding:2px 8px;border-radius:3px;font-family:monospace;">#00BFA5 (turquesa)</span> ← Você precisa agir!</div>
+        <div class="concept-example" style="background:#f7fafc;padding:14px;border-radius:4px;margin-bottom:12px;">
+          <div style="font-weight:600;margin-bottom:6px;font-size:14px;">Situação 3: Ação do Usuário Necessária</div>
+          <div style="font-size:13px;color:#4a5568;">Estado: <code>CONFEC. PROPOSTA</code> | Subcategoria: <code>CONFEC. LISTA DOCS</code></div>
+          <div style="font-size:13px;font-weight:600;margin-top:4px;">→ Cor: <span style="background:#00BFA5;color:black;padding:4px 10px;border-radius:3px;font-family:monospace;">#00BFA5 (turquesa)</span> ← Você precisa agir!</div>
         </div>
         
-        <div class="concept-example" style="background:#f7fafc;padding:10px;border-radius:4px;margin-bottom:8px;">
-          <div style="font-weight:600;margin-bottom:6px;font-size:11px;">Situação 4: Processo Indeferido</div>
-          <div style="font-size:10px;color:#4a5568;">Estado: <code>INTERNALIZADO</code> | Exceção: <code>BLOQUEIO</code> | Decisão: <code>INDEFERIDO</code></div>
-          <div style="font-size:10px;font-weight:600;margin-top:4px;">→ Cor: <span style="background:#DA1E28;color:white;padding:2px 8px;border-radius:3px;font-family:monospace;">#DA1E28 (vermelho)</span> ← Camada 3 domina TUDO</div>
+        <div class="concept-example" style="background:#f7fafc;padding:14px;border-radius:4px;margin-bottom:12px;">
+          <div style="font-weight:600;margin-bottom:6px;font-size:14px;">Situação 4: Processo Indeferido</div>
+          <div style="font-size:13px;color:#4a5568;">Estado: <code>INTERNALIZADO</code> | Exceção: <code>BLOQUEIO</code> | Decisão: <code>INDEFERIDO</code></div>
+          <div style="font-size:13px;font-weight:600;margin-top:4px;">→ Cor: <span style="background:#DA1E28;color:white;padding:4px 10px;border-radius:3px;font-family:monospace;">#DA1E28 (vermelho)</span> ← Camada 3 domina TUDO</div>
         </div>
       </div>
     </div>
