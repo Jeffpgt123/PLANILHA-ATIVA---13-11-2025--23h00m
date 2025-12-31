@@ -891,7 +891,7 @@ SHEETS: {
       VALIDACAO: {
         ativo: true,
         colInicio: 1,
-        colFim: 14,
+        colFim: 11,
         regrasPorColuna: {
           1: ['cpfOuCnpjValido'],
           6: ['FormatoDocsflow'],

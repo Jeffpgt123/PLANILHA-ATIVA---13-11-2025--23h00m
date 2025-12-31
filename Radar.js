@@ -90,7 +90,36 @@ const Radar = (() => {
     
     
     // ┌─────────────────────────────────────────────────────────────────────────┐
-    // │ 6. REGRAS SLA (CATEGORIAS REAIS DA PLANILHA)                           │
+    // │ 7. FORMATO DO TÍTULO DA TAREFA NO PLANNER                              │
+    // └─────────────────────────────────────────────────────────────────────────┘
+    //
+    // ⚠️ EDITE AQUI! Defina quais campos aparecerão no título e em que ordem
+    //
+    // Campos disponíveis:
+    // - {key}: Identificador único (ex: RADAR:DEMANDAS DIVERSAS:LINHA:14)
+    // - {cnpj}: CNPJ do cliente
+    // - {cliente}: Nome do cliente
+    // - {telefone}: Telefone
+    // - {contato}: Pessoa de contato
+    // - {produto}: Produto/serviço
+    // - {docsflow}: Número do processo
+    // - {categoria}: Situação (ex: A SOLICITAR)
+    // - {subcategoria}: Detalhe (ex: AGUARDANDO DOCS)
+    // - {comentario}: Comentários
+    //
+    // EXEMPLOS:
+    // '{key} | {cliente} | {categoria} / {subcategoria}'
+    // '{docsflow} - {cliente} ({categoria})'
+    // '{cliente} | {cnpj} | {categoria}'
+    //
+    TITULO: {
+      FORMATO: '{cliente} - {categoria} / {subcategoria} - DOCS {docsflow}',
+      MAX_CLIENTE_CHARS: 80, // Limite de caracteres para nome do cliente
+    },
+    
+    
+    // ┌─────────────────────────────────────────────────────────────────────────┐
+    // │ 8. REGRAS SLA (CATEGORIAS REAIS DA PLANILHA)                           │
     // └─────────────────────────────────────────────────────────────────────────┘
     //
     // ⚠️ EDITE AQUI! Adicione novas categorias conforme aparecem na planilha
@@ -142,7 +171,7 @@ const Radar = (() => {
     
     
     // ┌─────────────────────────────────────────────────────────────────────────┐
-    // │ 7. MAPEAMENTO DE BUCKETS DO PLANNER                                    │
+    // │ 8. MAPEAMENTO DE BUCKETS DO PLANNER                                    │
     // └─────────────────────────────────────────────────────────────────────────┘
     //
     // ⚠️ IMPORTANTE: Nomes devem ser EXATAMENTE iguais aos buckets no Planner
@@ -248,13 +277,13 @@ const Radar = (() => {
     const payload = _montarPayloadEnvio_(selecionados, mode);
 
     if (!payload.itens.length) {
-      Logger.log(`RADAR [${mode}]: SEM ITENS para enviar`);
+      console.log(`RADAR [${mode}]: SEM ITENS para enviar`);
       return { success: true, data: { mode, enviados: 0, motivo: 'SEM_ITENS' } };
     }
 
     _enviarEmailJSON_(payload, mode);
 
-    Logger.log(`RADAR [${mode}]: E-mail enviado com ${payload.itens.length} itens`);
+    console.log(`RADAR [${mode}]: E-mail enviado com ${payload.itens.length} itens`);
     return { success: true, data: { mode, enviados: payload.itens.length } };
   }
 
@@ -321,12 +350,7 @@ const Radar = (() => {
         linha: row.linha
       });
 
-      const titulo = _buildTitulo_({
-        key,
-        cliente: row.B_cliente,
-        categoria,
-        subcategoria
-      });
+      const titulo = _buildTitulo_(row, key);
 
       const descricao = _buildDescricao_({
         row,
@@ -342,7 +366,10 @@ const Radar = (() => {
 
       itens.push({
         key,
-        origem: { aba: CONFIG.ORIGEM.ABA, linha: row.linha },
+        origem: { 
+          aba: _sanitizeForJSON_(CONFIG.ORIGEM.ABA) || 'ABA',
+          linha: row.linha 
+        },
         titulo,
         descricao,
         bucket,
@@ -353,15 +380,15 @@ const Radar = (() => {
         checklistTemplate: checklistTemplate || null,
         checklistItens,
         dadosPlanilha: {
-          cnpj: row.A_cnpj || null,
-          cliente: row.B_cliente || null,
-          telefone: row.C_telefone || null,
-          contato: row.D_contato || null,
-          produto: row.E_produto || null,
-          docsflow: row.F_docsflow || null,
-          situacao: categoria,
-          detalhe: subcategoria,
-          comentario: row.I_comentario || null,
+          cnpj: _sanitizeForJSON_(row.A_cnpj) || null,
+          cliente: _sanitizeForJSON_(row.B_cliente) || null,
+          telefone: _sanitizeForJSON_(row.C_telefone) || null,
+          contato: _sanitizeForJSON_(row.D_contato) || null,
+          produto: _sanitizeForJSON_(row.E_produto) || null,
+          docsflow: _sanitizeForJSON_(row.F_docsflow) || null,
+          situacao: _sanitizeForJSON_(categoria),
+          detalhe: _sanitizeForJSON_(subcategoria),
+          comentario: _sanitizeForJSON_(row.I_comentario) || null,
           timestamp: row.K_timestamp ? row.K_timestamp.toString() : null,
         },
         flags: {
@@ -420,7 +447,7 @@ const Radar = (() => {
       meta: {
         mode,
         geradoEm: new Date().toISOString(),
-        origem: CONFIG.ORIGEM.ABA,
+        origem: _sanitizeForJSON_(CONFIG.ORIGEM.ABA) || 'ABA',
         totalSelecionado: selecionados.length,
         keyStrategy: CONFIG.KEY_STRATEGY
       },
@@ -435,10 +462,15 @@ const Radar = (() => {
 
     const body = JSON.stringify(payload, null, 2);
 
+    // ⚠️ CRÍTICO: enviar como texto plano (não HTML)
     MailApp.sendEmail({
       to: CONFIG.SAIDA.EMAIL_TO,
-      subject,
-      body
+      subject: subject,
+      body: body,
+      noReply: true,
+      // ADICIONAR ESTAS LINHAS:
+      htmlBody: '', // Força body vazio em HTML
+      mimeType: 'text/plain' // Força texto plano
     });
   }
 
@@ -448,7 +480,7 @@ const Radar = (() => {
   
   function _loadRegrasEApoios_(ss) {
     // FASE 1: Tabelas A/B desabilitadas - usa fallbacks hardcoded
-    Logger.log('RADAR [MVP]: Tabelas A/B desabilitadas - usando CONFIG.REGRAS_SLA');
+    console.log('RADAR [MVP]: Tabelas A/B desabilitadas - usando CONFIG.REGRAS_SLA');
     
     return {
       regrasA: [],
@@ -519,22 +551,56 @@ const Radar = (() => {
     return idx;
   }
 
-  function _buildKey_({ aba, docsflow, linha }) {
-    for (const s of CONFIG.KEY_STRATEGY) {
-      if (s === 'DOCSFLOW') {
-        const df = String(docsflow || '').trim();
-        if (df) return `RADAR:${aba}:DOCSFLOW:${df}`;
-      }
-      if (s === 'ABA_LINHA') {
-        if (aba && linha) return `RADAR:${aba}:LINHA:${linha}`;
-      }
-    }
-    return `RADAR:${aba}:LINHA:${linha}`;
+  function _sanitizeForJSON_(str) {
+    if (!str) return str;
+    return String(str)
+      .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove caracteres de controle
+      .replace(/[\uD800-\uDFFF]/g, '') // Remove emojis/símbolos especiais
+      .trim();
   }
 
-  function _buildTitulo_({ key, cliente, categoria, subcategoria }) {
-    const cli = (cliente ? String(cliente).trim() : '').slice(0, 40);
-    return `${key} | ${cli} | ${categoria} / ${subcategoria}`;
+  function _buildKey_({ aba, docsflow, linha }) {
+    // Sanitiza nome da aba (remove emojis para JSON seguro)
+    const abaSanitizada = _sanitizeForJSON_(aba) || 'ABA';
+    
+    for (const s of CONFIG.KEY_STRATEGY) {
+      if (s === 'DOCSFLOW') {
+        const df = _sanitizeForJSON_(docsflow);
+        if (df) return `RADAR:${abaSanitizada}:DOCSFLOW:${df}`;
+      }
+      if (s === 'ABA_LINHA') {
+        if (aba && linha) return `RADAR:${abaSanitizada}:LINHA:${linha}`;
+      }
+    }
+    return `RADAR:${abaSanitizada}:LINHA:${linha}`;
+  }
+
+  function _buildTitulo_(row, key) {
+    // Buscar formato configurado
+    const formato = CONFIG.TITULO.FORMATO;
+    const maxCliente = CONFIG.TITULO.MAX_CLIENTE_CHARS;
+    
+    // Mapa de campos disponíveis (sanitizados)
+    const campos = {
+      key: key,
+      cnpj: _sanitizeForJSON_(row.A_cnpj) || '',
+      cliente: (_sanitizeForJSON_(row.B_cliente) || '').slice(0, maxCliente),
+      telefone: _sanitizeForJSON_(row.C_telefone) || '',
+      contato: _sanitizeForJSON_(row.D_contato) || '',
+      produto: _sanitizeForJSON_(row.E_produto) || '',
+      docsflow: _sanitizeForJSON_(row.F_docsflow) || '',
+      categoria: _sanitizeForJSON_(row.G_situacao) || '',
+      subcategoria: _sanitizeForJSON_(row.H_detalhe) || '',
+      comentario: _sanitizeForJSON_(row.I_comentario) || '',
+    };
+    
+    // Substituir placeholders {campo} pelo valor correspondente
+    let titulo = formato;
+    for (const [campo, valor] of Object.entries(campos)) {
+      titulo = titulo.replace(new RegExp(`\\{${campo}\\}`, 'g'), valor);
+    }
+    
+    return titulo;
   }
 
   function _buildDescricao_({ row, key, bucket, slaDias, prioridade, urgencia, dueDate, missingParams, checklistTemplate }) {
