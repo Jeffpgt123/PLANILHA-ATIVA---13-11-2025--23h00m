@@ -883,7 +883,7 @@ SHEETS: {
         FILE_ID: 20
       },
 
-      COLUNAS_MONITORADAS: ["A", "B", "C", "D", "E", "J","K", "L", "M", "N"],
+      COLUNAS_MONITORADAS: ["A", "B", "C", "D", "E", "J", "L", "M", "N"],
       COLUNA_TIMESTAMP: "K",
       FORMATO: "dd/MM/yyyy",
       TRAVAR_HORA_EM_ZERO: true,
