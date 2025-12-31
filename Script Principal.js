@@ -2405,6 +2405,21 @@ const Triggers = {
         }
         
         menu.addToUi();
+        
+        // ▶▶▶ MENU RADAR (NOVO) ◀◀◀
+        try {
+          ui.createMenu('📋 RADAR')
+            .addItem('⚙️ Configurações', 'abrirConfigurador')
+            .addSeparator()
+            .addItem('▶️ Executar Imediato', 'RADAR_runImediato')
+            .addItem('📊 Executar Conferência', 'RADAR_runConferencia')
+            .addSeparator()
+            .addItem('🔧 Configurar Triggers', 'RADAR_setupTriggers')
+            .addToUi();
+        } catch (e) {
+          console.error("Falha ao adicionar menu RADAR:", e);
+        }
+        
         Triggers._cache.menuConfigurado = true;
       
       } catch (erro) {
@@ -2506,6 +2521,10 @@ function _onEdit_DESATIVADO(e) {
   return Triggers.onEdit(e);
 }
 
+// ████████████████████████████████████████████████████████████████████████
+// ▶ FUNÇÕES DE ABERTURA DE SIDEBARS
+// ████████████████████████████████████████████████████████████████████████
+
 function abrirConfiguradorCores() {
   try {
     const html = HtmlService.createHtmlOutputFromFile('SidebarCores')
@@ -2516,5 +2535,19 @@ function abrirConfiguradorCores() {
   } catch (erro) {
     SpreadsheetApp.getUi().alert('Erro ao abrir configurador: ' + erro.message);
     console.error('Erro em abrirConfiguradorCores:', erro);
+  }
+}
+
+// ▶▶▶ SIDEBAR RADAR (NOVO) ◀◀◀
+function abrirConfigurador() {
+  try {
+    const html = HtmlService.createHtmlOutputFromFile('ConfiguradorUI_Expandido')
+        .setTitle('⚙️ Configurador RADAR')
+        .setWidth(380);
+    
+    SpreadsheetApp.getUi().showSidebar(html);
+  } catch (erro) {
+    SpreadsheetApp.getUi().alert('Erro ao abrir configurador RADAR: ' + erro.message);
+    console.error('Erro em abrirConfigurador:', erro);
   }
 }

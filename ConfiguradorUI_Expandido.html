@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      padding: 0;
+      background: #f5f5f5;
+      margin: 0;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+    
+    .header p {
+      margin: 5px 0 0 0;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    
+    /* TABS DE NAVEGAÇÃO */
+    .tabs {
+      display: flex;
+      background: white;
+      border-bottom: 2px solid #e0e0e0;
+      overflow-x: auto;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      background: white;
+      color: #666;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    
+    .tab:hover {
+      background: #f5f5f5;
+    }
+    
+    .tab.active {
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+      margin-bottom: -2px;
+    }
+    
+    /* CONTEÚDO DAS ABAS */
+    .tab-content {
+      display: none;
+      padding: 15px;
+      animation: fadeIn 0.3s;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .config-group {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .config-group h3 {
+      margin: 0 0 15px 0;
+      font-size: 16px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #555;
+      font-size: 13px;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
+      transition: border-color 0.3s;
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      margin: 0;
+    }
+    
+    .checkbox-wrapper label {
+      margin: 0;
+      cursor: pointer;
+      flex: 1;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 15px;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 10px;
+      transition: all 0.2s;
+    }
+    
+    .btn-secondary:hover {
+      background: #f0f4ff;
+    }
+    
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+      width: auto;
+      margin-top: 5px;
+    }
+    
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 15px;
+      display: none;
+      font-size: 14px;
+      font-weight: 500;
+      position: sticky;
+      bottom: 0;
+      background: white;
+      z-index: 10;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+    
+    .status.loading {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      display: block;
+    }
+    
+    .help-text {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: -10px;
+      margin-bottom: 15px;
+    }
+    
+    .info-box {
+      background: #e7f3ff;
+      border-left: 4px solid #2196f3;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #0d47a1;
+    }
+    
+    .info-box strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+    
+    .divider {
+      height: 1px;
+      background: #e0e0e0;
+      margin: 20px 0;
+    }
+    
+    /* LISTA DE BUCKETS */
+    .bucket-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .bucket-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    
+    .bucket-item input {
+      flex: 1;
+      margin: 0;
+    }
+    
+    .bucket-item button {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .bucket-item button:hover {
+      background: #c82333;
+    }
+    
+    /* SELETOR DE ABA */
+    .aba-selector {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+    
+    .aba-selector label {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="header">
+    <h2>⚙️ Configurador RADAR</h2>
+    <p>Sistema de Gestão de Tarefas do Planner</p>
+  </div>
+  
+  <!-- TABS DE NAVEGAÇÃO -->
+  <div class="tabs">
+    <button class="tab active" onclick="abrirTab('basico')">⚡ Básico</button>
+    <button class="tab" onclick="abrirTab('templates')">📝 Templates</button>
+    <button class="tab" onclick="abrirTab('buckets')">🪣 Buckets</button>
+    <button class="tab" onclick="abrirTab('avancado')">🔧 Avançado</button>
+  </div>
+  
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- TAB 1: CONFIGURAÇÕES BÁSICAS -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="tab-basico" class="tab-content active">
+    
+    <div class="info-box">
+      <strong>💡 Dica</strong>
+      Configurações básicas de execução e e-mail.
+    </div>
+    
+    <div class="config-group">
+      <h3>⚡ Ativação do Sistema</h3>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="enabled" checked>
+        <label for="enabled">Sistema RADAR Ativo</label>
+      </div>
+      <p class="help-text">Desative temporariamente sem remover configurações</p>
+    </div>
+    
+    <div class="config-group">
+      <h3>⏰ Agendamentos Automáticos</h3>
+      
+      <label for="horaImediato">Hora Execução Imediato (0-23):</label>
+      <input type="number" id="horaImediato" min="0" max="23" value="20">
+      <p class="help-text">Execução diária principal (padrão: 20h)</p>
+      
+      <label for="horaConferencia">Hora Execução Conferência (0-23):</label>
+      <input type="number" id="horaConferencia" min="0" max="23" value="6">
+      <p class="help-text">Verificação matinal de prioridades (padrão: 6h)</p>
+    </div>
+    
+    <div class="config-group">
+      <h3>📧 Configurações de E-mail</h3>
+      
+      <label for="emailDestinatario">Destinatário:</label>
+      <input type="email" id="emailDestinatario" value="jefferson.santos@basa.com.br">
+      <p class="help-text">E-mail que receberá o JSON para Power Automate</p>
+      
+      <label for="assunto">Assunto do E-mail:</label>
+      <input type="text" id="assunto" value="RADAR_PLANNER">
+      <p class="help-text">Mantenha consistente com filtro do Power Automate</p>
+    </div>
+    
+    <div class="config-group">
+      <h3>📊 Limites de Processamento</h3>
+      
+      <label for="maxItens">Máximo de Itens por Envio:</label>
+      <input type="number" id="maxItens" min="1" max="100" value="50">
+      <p class="help-text">Limite de tarefas enviadas por execução (1-100)</p>
+      
+      <label for="maxItensConferencia">Máximo em Modo Conferência:</label>
+      <input type="number" id="maxItensConferencia" min="1" max="50" value="25">
+      <p class="help-text">Limite para execução de conferência (1-50)</p>
+    </div>
+    
+  </div>
+  
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- TAB 2: TEMPLATES POR ABA -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="tab-templates" class="tab-content">
+    
+    <div class="info-box">
+      <strong>📝 Templates de Título e Descrição</strong>
+      Use {LETRA} para inserir valores de colunas. Ex: {B} = Coluna B, {G} = Coluna G
+    </div>
+    
+    <div class="aba-selector">
+      <label for="abaSelect">Selecione a Aba:</label>
+      <select id="abaSelect" onchange="carregarTemplatesAba()">
+        <option value="DEMANDAS DIVERSAS🔧">DEMANDAS DIVERSAS🔧</option>
+        <option value="SEGUROS🛡️">SEGUROS🛡️</option>
+        <option value="INTERNALIZADO🎯">INTERNALIZADO🎯</option>
+        <option value="EM ANALISE📊">EM ANALISE📊</option>
+        <option value="CADASTROS🧑‍💻">CADASTROS🧑‍💻</option>
+      </select>
+    </div>
+    
+    <div class="config-group">
+      <h3>📌 Template de Título</h3>
+      
+      <label for="templateTitulo">Template:</label>
+      <textarea id="templateTitulo" placeholder="{B} | {G} / {H}"></textarea>
+      <p class="help-text">Exemplo: {B} | {G} / {H} = "CLIENTE | SITUACAO / DETALHE"</p>
+    </div>
+    
+    <div class="config-group">
+      <h3>📄 Template de Descrição</h3>
+      
+      <label for="templateDescricao">Template:</label>
+      <textarea id="templateDescricao" placeholder="DOCSFLOW: {F}\nComentário: {I}"></textarea>
+      <p class="help-text">Use \n para quebra de linha</p>
+    </div>
+    
+    <div class="config-group">
+      <h3>👤 Atribuição Fixa (Opcional)</h3>
+      
+      <label for="assignedToFixo">E-mail do Responsável:</label>
+      <input type="email" id="assignedToFixo" placeholder="usuario@basa.com.br">
+      <p class="help-text">Deixe em branco para não atribuir automaticamente</p>
+    </div>
+    
+  </div>
+  
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- TAB 3: BUCKETS VÁLIDOS -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="tab-buckets" class="tab-content">
+    
+    <div class="info-box">
+      <strong>🪣 Buckets do Planner</strong>
+      Configure os nomes válidos de buckets que podem ser usados pelo RADAR.
+    </div>
+    
+    <div class="config-group">
+      <h3>Lista de Buckets</h3>
+      
+      <ul id="bucketList" class="bucket-list">
+        <!-- Preenchido dinamicamente -->
+      </ul>
+      
+      <button class="btn-secondary btn-small" onclick="adicionarBucket()">➕ Adicionar Bucket</button>
+    </div>
+    
+  </div>
+  
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- TAB 4: CONFIGURAÇÕES AVANÇADAS -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="tab-avancado" class="tab-content">
+    
+    <div class="info-box">
+      <strong>🔧 Configurações Avançadas</strong>
+      Modifique apenas se souber o que está fazendo.
+    </div>
+    
+    <div class="config-group">
+      <h3>🎯 Modo Conferência</h3>
+      
+      <label for="minPrioridade">Prioridade Mínima para Conferência:</label>
+      <input type="number" id="minPrioridade" min="0" max="10" value="2">
+      <p class="help-text">Apenas itens com prioridade ≤ este valor (0-10)</p>
+    </div>
+    
+    <div class="config-group">
+      <h3>📊 Mapeamento de Prioridades</h3>
+      
+      <label>Prioridade Planilha → Planner:</label>
+      <div class="help-text" style="margin-top: 0;">
+        0-1 = Urgente (1) | 2-4 = Importante (3) | 5-7 = Normal (5) | 8-10 = Baixa (9)
+      </div>
+      <p class="help-text">Este mapeamento está fixo no código. Use prioridades de 0-10 na planilha.</p>
+    </div>
+    
+    <button class="btn-secondary" onclick="restaurarPadroes()">🔄 Restaurar Todos os Padrões</button>
+    
+  </div>
+  
+  <!-- BOTÃO DE SALVAR (FIXO NO FUNDO) -->
+  <div style="padding: 15px; background: #f5f5f5;">
+    <button class="btn-primary" onclick="salvarConfig()">💾 Salvar Configurações</button>
+    <div id="status" class="status"></div>
+  </div>
+  
+  <script>
+    // ═══════════════════════════════════════════════════════════════════
+    // VARIÁVEIS GLOBAIS
+    // ═══════════════════════════════════════════════════════════════════
+    
+    let configCache = {};
+    let templatesCache = {};
+    let bucketsCache = [];
+    
+    // ═══════════════════════════════════════════════════════════════════
+    // NAVEGAÇÃO ENTRE TABS
+    // ═══════════════════════════════════════════════════════════════════
+    
+    function abrirTab(tabName) {
+      // Esconde todas as tabs
+      const tabs = document.getElementsByClassName('tab-content');
+      for (let i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+      }
+      
+      // Remove active dos botões
+      const tabButtons = document.getElementsByClassName('tab');
+      for (let i = 0; i < tabButtons.length; i++) {
+        tabButtons[i].classList.remove('active');
+      }
+      
+      // Mostra tab selecionada
+      document.getElementById('tab-' + tabName).classList.add('active');
+      event.target.classList.add('active');
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════
+    // INICIALIZAÇÃO
+    // ═══════════════════════════════════════════════════════════════════
+    
+    window.onload = function() {
+      mostrarStatus('Carregando configurações...', 'loading');
+      
+      google.script.run
+        .withSuccessHandler(function(config) {
+          configCache = config;
+          preencherFormulario(config);
+          carregarTemplatesAba(); // Carrega primeira aba
+          renderizarBuckets(config.buckets || []);
+          ocultarStatus();
+        })
+        .withFailureHandler(function(error) {
+          mostrarStatus('❌ Erro ao carregar: ' + error, 'error');
+        })
+        .getConfigCompleta();
+    };
+    
+    // ═══════════════════════════════════════════════════════════════════
+    // PREENCHE FORMULÁRIO - TAB BÁSICO
+    // ═══════════════════════════════════════════════════════════════════
+    
+    function preencherFormulario(config) {
+      document.getElementById('enabled').checked = config.enabled;
+      document.getElementById('horaImediato').value = config.horaImediato;
+      document.getElementById('horaConferencia').value = config.horaConferencia;
+      document.getElementById('emailDestinatario').value = config.emailDestinatario;
+      document.getElementById('assunto').value = config.assunto || 'RADAR_PLANNER';
+      document.getElementById('maxItens').value = config.maxItens;
+      document.getElementById('maxItensConferencia').value = config.maxItensConferencia || '25';
+      document.getElementById('minPrioridade').value = config.minPrioridade || '2';
+      
+      // Salva templates em cache
+      templatesCache = config.templates || {};
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════
+    // CARREGA TEMPLATES DA ABA SELECIONADA
+    // ═══════════════════════════════════════════════════════════════════
+    
+    function carregarTemplatesAba() {
+      const abaSelect = document.getElementById('abaSelect');
+      const abaSelecionada = abaSelect.value;
+      
+      const templates = templatesCache[abaSelecionada] || {
+        titulo: '',
+        description: '',
+        assignedTo: ''
+      };
+      
+      document.getElementById('templateTitulo').value = templates.titulo || '';
+      document.getElementById('templateDescricao').value = templates.description || '';
+      document.getElementById('assignedToFixo').value = templates.assignedTo || '';
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════
+    // GERENCIAMENTO DE BUCKETS
+    // ═══════════════════════════════════════════════════════════════════
+    
+    function renderizarBuckets(buckets) {
+      bucketsCache = buckets;
+      const lista = document.getElementById('bucketList');
+      lista.innerHTML = '';
+      
+      buckets.forEach((bucket, index) => {
+        const li = document.createElement('li');
+        li.className = 'bucket-item';
+        li.innerHTML = `
+          <input type="text" value="${bucket}" onchange="editarBucket(${index}, this.value)">
+          <button onclick="removerBucket(${index})">🗑️</button>
+        `;
+        lista.appendChild(li);
+      });
+    }
+    
+    function adicionarBucket() {
+      bucketsCache.push('NOVO BUCKET');
+      renderizarBuckets(bucketsCache);
+    }
+    
+    function editarBucket(index, novoValor) {
+      bucketsCache[index] = novoValor.toUpperCase().trim();
+    }
+    
+    function removerBucket(index) {
+      if (confirm('Remover este bucket?')) {
+        bucketsCache.splice(index, 1);
+        renderizarBuckets(bucketsCache);
+      }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════
+    // SALVA TODAS AS CONFIGURAÇÕES
+    // ═══════════════════════════════════════════════════════════════════
+    
+    function salvarConfig() {
+      // Salva templates da aba atual antes de enviar
+      salvarTemplateAtual();
+      
+      const config = {
+        // Tab Básico
+        enabled: document.getElementById('enabled').checked,
+        horaImediato: document.getElementById('horaImediato').value,
+        horaConferencia: document.getElementById('horaConferencia').value,
+        emailDestinatario: document.getElementById('emailDestinatario').value,
+        assunto: document.getElementById('assunto').value,
+        maxItens: document.getElementById('maxItens').value,
+        maxItensConferencia: document.getElementById('maxItensConferencia').value,
+        
+        // Tab Templates
+        templates: templatesCache,
+        
+        // Tab Buckets
+        buckets: bucketsCache,
+        
+        // Tab Avançado
+        minPrioridade: document.getElementById('minPrioridade').value
+      };
+      
+      mostrarStatus('💾 Salvando configurações...', 'loading');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            mostrarStatus('✅ Configurações salvas com sucesso!', 'success');
+            setTimeout(() => ocultarStatus(), 3000);
+          } else {
+            mostrarStatus('❌ Erro: ' + (result.error || 'Erro desconhecido'), 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          mostrarStatus('❌ Erro ao salvar: ' + error, 'error');
+        })
+        .saveConfigCompleta(config);
+    }
+    
+    function salvarTemplateAtual() {
+      const abaSelect = document.getElementById('abaSelect');
+      const abaSelecionada = abaSelect.value;
+      
+      templatesCache[abaSelecionada] = {
+        titulo: document.getElementById('templateTitulo').value,
+        description: document.getElementById('templateDescricao').value,
+        assignedTo: document.getElementById('assignedToFixo').value
+      };
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════
+    // RESTAURAR PADRÕES
+    // ═══════════════════════════════════════════════════════════════════
+    
+    function restaurarPadroes() {
+      if (!confirm('Deseja realmente restaurar TODAS as configurações para os valores padrão?')) {
+        return;
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(config) {
+          preencherFormulario(config);
+          carregarTemplatesAba();
+          renderizarBuckets(config.buckets);
+          mostrarStatus('🔄 Padrões restaurados. Clique em "Salvar" para aplicar.', 'loading');
+        })
+        .withFailureHandler(function(error) {
+          mostrarStatus('❌ Erro: ' + error, 'error');
+        })
+        .restaurarPadroesCompletos();
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════
+    // FUNÇÕES AUXILIARES DE UI
+    // ═══════════════════════════════════════════════════════════════════
+    
+    function mostrarStatus(mensagem, tipo) {
+      const statusDiv = document.getElementById('status');
+      statusDiv.textContent = mensagem;
+      statusDiv.className = 'status ' + tipo;
+    }
+    
+    function ocultarStatus() {
+      setTimeout(() => {
+        const statusDiv = document.getElementById('status');
+        statusDiv.style.display = 'none';
+      }, 500);
+    }
+  </script>
+</body>
+</html>
